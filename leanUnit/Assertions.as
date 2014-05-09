@@ -26,11 +26,38 @@ class leanUnit.Assertions
 		}
 	}
 
-	function assertEqual(expected, actual, message)
+	function assertEqual(actual, expected, message)
 	{
-		message = mergeMessages(message, "Expected "+expected+", not "+actual)
-		assert( expected === actual, message )
+    if ((actual instanceof Array) and (expected instanceof Array))
+    {
+      assertEqualArray(actual, expected, message)
+    }
+    else
+    {
+      message = mergeMessages(message, "Expected "+expected+", not "+actual)
+      assert( expected === actual, message )
+    }
 	}
+
+  function assertEqualArray(actual, expected, message)
+  {
+    var equal:Boolean = false
+    if (actual.length == expected.length)
+    {
+      for (var i=0; i < actual.length; i++)
+      {
+        equal = actual[i] == expected[i]
+        if (!equal)
+          break
+      }
+      if (equal)
+      {
+        return assert( true, message )
+      }
+    }
+    message = mergeMessages(message, "Expected ["+expected.join(",")+"], not ["+actual.join(",")+"]")
+    assert( false, message )
+  }
 	
 	function assertNull(object, message)
 	{
