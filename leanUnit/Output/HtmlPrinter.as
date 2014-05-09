@@ -6,29 +6,29 @@ September 13 update: Added addSuccess and addFail functions since it should be t
 
 */
 
-class leanUnit.Output
+class leanUnit.Output.HtmlPrinter
 {
 	//-------------------------------------------------------------------
 	//	PUBLIC CLASS METHODS
 	//-------------------------------------------------------------------
 	
-	static function write(message, messageType)
+	function write(message, messageType)
 	{
 		var cssClass = messageType || 'default'
 		instance.htmlText += '<span class="'+cssClass+'">'+message+'</span>'
 	}
 	
-	static function writeln(message, messageType)
+	function writeln(message, messageType)
 	{
 		write( "<p>"+(message || '')+"</p>", messageType )
 	}
 	
-	static function addSuccess()
+	function addSuccess()
 	{
 		write( '.' )
 	}
 	
-	static function addFail()
+	function addFail()
 	{
 		write( 'F', 'fail' )
 	}
@@ -37,7 +37,7 @@ class leanUnit.Output
 	//	PRIVATE CLASS METHODS
 	//-------------------------------------------------------------------
 	
-	static function get instance()
+	function get instance()
 	{
 		if( !_root.testOutputTextField )
 		{
@@ -56,7 +56,7 @@ class leanUnit.Output
 		return _root.testOutputTextField
 	}
 	
-	static function get textFormat():TextFormat
+	function get textFormat():TextFormat
 	{
 		var tf = new TextFormat()
 		tf.font = "Monaco"
@@ -66,7 +66,7 @@ class leanUnit.Output
 		return tf
 	}
 	
-	static function get styleSheet()
+	function get styleSheet()
 	{
 		var css = new TextField.StyleSheet()
 		css.parseCSS("body { font-size: 10px; font-family: Monaco, Verdana; } .default { color:#FFFFFF; } .success { color:#00FF00; } .fail { color:#FF0000; }")

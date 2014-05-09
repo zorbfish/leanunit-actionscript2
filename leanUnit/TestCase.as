@@ -36,9 +36,10 @@ class leanUnit.TestCase extends Assertions
 {
 	private var _testMethods:Array
 	private var _timeTaken
-	
-	var setup:Function
-	var teardown:Function
+	private var _testsRun
+
+	var setUp:Function
+	var tearDown:Function
 	
 	//-------------------------------------------------------------------
 	//	CONSTRUCTOR
@@ -50,6 +51,7 @@ class leanUnit.TestCase extends Assertions
 		className = className.substr(className.lastIndexOf('.')+1) // remove namespace
 	
 		failures = new Array()
+		_testsRun = 0
 		assertionCount = 0
 	}
 	
@@ -57,12 +59,14 @@ class leanUnit.TestCase extends Assertions
 	//	PUBLIC METHODS
 	//-------------------------------------------------------------------
 	
-	function run()
+	function runTest()
 	{
-		for(var i=0; i<testMethods.length; i++)
-		{
-			runMethod(testMethods[i])
-		}
+    if (testMethods.length > 0)
+    {
+      runMethod(testMethods[_testsRun])
+      _testsRun += 1
+    }
+		return [testMethods.length - _testsRun, failures]
 	}
 	
 	function toString()
@@ -77,10 +81,11 @@ class leanUnit.TestCase extends Assertions
 	private function runMethod(methodName)
 	{
 		currentMethod = methodName
+		failures = new Array()
 	
-		setup()
+		setUp()
 		this[methodName]()
-		teardown()
+		tearDown()
 	}
 	
 	//-------------------------------------------------------------------

@@ -18,11 +18,10 @@ class leanUnit.Assertions
 		assertionCount += 1
 		if( truth )
 		{
-			Output.addSuccess()
+			failures.push(null)
 		}
 		else
 		{
-			Output.addFail()
 			failures.push(new Failure(className, currentMethod, message))
 		}
 	}
@@ -51,7 +50,7 @@ class leanUnit.Assertions
 		assert( object === undefined, message )
 	}
 
-	function asserNotUndefined(object, message)
+	function assertNotUndefined(object, message)
 	{
 		message = mergeMessages(message, "Expected "+object+" to not be undefined")
 		assert( object !== undefined, message )

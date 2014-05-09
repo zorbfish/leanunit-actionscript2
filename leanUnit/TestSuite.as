@@ -21,11 +21,12 @@ class leanUnit.TestSuite extends Array
 	var assertionCount:Number = 0
 	var failures:Array = new Array()
 	var timeTaken:Number
+	var output:Object
 	
 	//-------------------------------------------------------------------
 	//	CONSTRUCTOR
 	//-------------------------------------------------------------------
-
+	
 	function TestSuite()
 	{
 		push.apply(this, arguments)
@@ -35,9 +36,11 @@ class leanUnit.TestSuite extends Array
 	//	PUBLIC FUNCTIONS
 	//-------------------------------------------------------------------
 	
-	function run()
+	function run(outputMethod)
 	{
-		Output.writeln( "Running "+caseNames.join(', ') )
+		output = new ( outputMethod || leanUnit.Output.TracePrinter )()
+    output.writeln()
+		output.writeln( "Running "+caseNames.join(', ') )
 	
 		reset()
 		iterateAndRun()
@@ -61,34 +64,51 @@ class leanUnit.TestSuite extends Array
 		for( var i=0; i<length; i++ )
 		{
 			var testCase = new this[i]()
-			runCase( testCase )
-		}	
+			while ( runCase( testCase ) )
+      {
+        testCount += 1
+      }
+		}
 		timeTaken = getTimer() - startTime
 	}
 	
 	private function runCase( testCase:TestCase )
 	{
-		testCase.run()
+		var result = testCase.runTest()
+		var assertions = result[1]
 		
-		failures = failures.concat( testCase.failures )
-		testCount += testCase.testMethods.length
-		assertionCount += testCase.assertionCount
+		for ( var i in assertions )
+		{
+			if ( assertions[i] instanceof Failure )
+			{
+				failures.push(assertions[i])
+				output.addFail()
+			}
+			else
+			{
+				output.addSuccess()
+			}
+		}
+		
+		assertionCount += result[1].length
+		
+		return result[0]
 	}
 	
 	private function reportResults()
 	{
-		Output.writeln()
-		Output.writeln('Finished in '+(timeTaken/1000)+' seconds')
+		output.writeln()
+		output.writeln('Finished in '+(timeTaken/1000.0)+' seconds')
 		
 		for( var i=0; i<failures.length; i++ )
 		{
-			Output.writeln()
-			Output.writeln( (i+1)+")")
-			Output.writeln( failures[i], "fail" )
+			output.writeln()
+			output.writeln( (i+1)+")")
+			output.writeln( failures[i], "fail" )
 		}
 		
-		Output.writeln()
-		Output.writeln( testCount+" tests, "+assertionCount+" assertions, "+failures.length+" failures", failures.length > 0 ? 'fail' : 'success' )
+		output.writeln()
+		output.writeln( testCount+" tests, "+assertionCount+" assertions, "+failures.length+" failures", failures.length > 0 ? 'fail' : 'success' )
 	}
 	
 	function get caseNames():Array
@@ -101,6 +121,4 @@ class leanUnit.TestSuite extends Array
 		}
 		return names
 	}
-	
-	
 }
